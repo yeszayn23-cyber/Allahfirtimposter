@@ -2,73 +2,57 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>عجلة الحظ التفاعلية</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Winwheel/2.7.0/Winwheel.min.js"></script>
+    <title>عجلة الحظ البسيطة</title>
     <style>
-        body { text-align: center; background: #efebe9; font-family: sans-serif; padding: 10px; }
-        .input-box { margin-bottom: 30px; border: 2px solid #a1887f; padding: 15px; border-radius: 15px; }
-        textarea { width: 90%; height: 60px; padding: 10px; border-radius: 8px; border: 1px solid #8d6e63; margin-bottom: 10px; }
-        canvas { background-color: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; margin-top: 10px; }
-        button { padding: 12px 25px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; margin: 5px; font-size: 16px; }
+        body { text-align: center; font-family: sans-serif; background: #efebe9; }
+        .box { margin: 20px; border: 2px solid #5d4037; padding: 15px; display: inline-block; border-radius: 15px; }
+        canvas { background: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; }
+        textarea { display: block; width: 250px; height: 50px; margin: 10px auto; }
+        button { padding: 10px 20px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 5px; }
     </style>
 </head>
 <body>
 
-    <h1>عجلة الحظ التفاعلية</h1>
+    <h1>عجلة الحظ</h1>
 
-    <div class="input-box">
-        <textarea id="input1" placeholder="أدخل الأسماء مفصولة بـ (،)"></textarea><br>
-        <button onclick="saveAndDraw(wheel1, 'input1', 'names1')">حفظ وتحديث العجلة 1</button>
-        <br>
+    <div class="box">
+        <textarea id="list1" placeholder="أدخل الأسماء هنا، مفصولة بـ (،)"></textarea>
+        <button onclick="updateWheel('canvas1', 'list1')">حفظ وتحديث</button>
         <canvas id="canvas1" width="250" height="250"></canvas>
-        <br><button onclick="wheel1.startAnimation()">تدوير العجلة 1</button>
-    </div>
-
-    <div class="input-box">
-        <textarea id="input2" placeholder="أدخل الأسماء مفصولة بـ (،)"></textarea><br>
-        <button onclick="saveAndDraw(wheel2, 'input2', 'names2')">حفظ وتحديث العجلة 2</button>
-        <br>
-        <canvas id="canvas2" width="250" height="250"></canvas>
-        <br><button onclick="wheel2.startAnimation()">تدوير العجلة 2</button>
     </div>
 
     <script>
-        // إعداد العجلات بمتغيرات أساسية
-        let wheel1 = new Winwheel({'canvasId': 'canvas1', 'numSegments': 0});
-        let wheel2 = new Winwheel({'canvasId': 'canvas2', 'numSegments': 0});
+        function updateWheel(canvasId, inputId) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext("2d");
+            const names = document.getElementById(inputId).value.split('،').filter(n => n.trim() !== "");
+            
+            if (names.length === 0) return;
 
-        function saveAndDraw(wheel, inputId, storageKey) {
-            let text = document.getElementById(inputId).value;
-            localStorage.setItem(storageKey, text);
+            // مسح العجلة
+            ctx.clearRect(0, 0, 250, 250);
             
-            // تنظيف العجلة تماماً قبل إعادة الرسم
-            wheel.stopAnimation(false);
-            wheel.clearCanvas();
-            wheel.segments = new Array(); // مسح مصفوفة القطاعات
-            wheel.rotationAngle = 0;
-            
-            let names = text.split('،').map(name => name.trim()).filter(n => n !== "");
-            
-            // إضافة القطاعات الجديدة
-            names.forEach(name => {
-                wheel.addSegment({'fillStyle': '#a1887f', 'text': name}, null);
+            // رسم بسيط للأسماء
+            const angle = (2 * Math.PI) / names.length;
+            names.forEach((name, i) => {
+                ctx.beginPath();
+                ctx.moveTo(125, 125);
+                ctx.arc(125, 125, 120, i * angle, (i + 1) * angle);
+                ctx.fillStyle = i % 2 === 0 ? "#795548" : "#5d4037";
+                ctx.fill();
+                ctx.stroke();
+                
+                // كتابة النص
+                ctx.fillStyle = "white";
+                ctx.font = "16px Arial";
+                ctx.save();
+                ctx.translate(125, 125);
+                ctx.rotate(i * angle + angle / 2);
+                ctx.fillText(name, 50, 5);
+                ctx.restore();
             });
-            
-            wheel.draw();
+            alert("تم حفظ الأسماء وتحديث العجلة!");
         }
-
-        // تحميل البيانات عند فتح الصفحة
-        window.onload = () => {
-            ['names1', 'names2'].forEach((key, index) => {
-                let saved = localStorage.getItem(key);
-                if(saved) {
-                    let input = document.getElementById('input' + (index + 1));
-                    input.value = saved;
-                    saveAndDraw(index === 0 ? wheel1 : wheel2, 'input' + (index + 1), key);
-                }
-            });
-        };
     </script>
 </body>
 </html>
