@@ -4,19 +4,13 @@
     <meta charset="UTF-8">
     <title>عجلة الحظ التفاعلية</title>
     <style>
-        body { text-align: center; font-family: sans-serif; background: #efebe9; padding: 20px; }
-        .wheel-container { margin-bottom: 40px; padding: 15px; border: 2px solid #5d4037; border-radius: 20px; background: #d7ccc8; }
-        
-        /* الحاوية الخاصة بـ canvas والسهم */
+        body { text-align: center; font-family: sans-serif; background: #efebe9; padding: 10px; }
+        .wheel-container { margin-bottom: 30px; padding: 15px; border: 2px solid #5d4037; border-radius: 20px; background: #d7ccc8; }
         .canvas-wrapper { position: relative; width: 260px; margin: 10px auto; }
-        
-        canvas { background: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; display: block; transition: transform 3s cubic-bezier(0.17, .67, 0.12, .99); }
-        
-        /* السهم */
+        canvas { background: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; display: block; transition: transform 4s cubic-bezier(0.17, .67, 0.12, .99); }
         .arrow { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #3e2723; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; }
-        
-        textarea { width: 90%; height: 60px; margin: 10px 0; border-radius: 8px; border: 1px solid #5d4037; }
-        button { padding: 10px 20px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 5px; }
+        textarea { width: 90%; height: 70px; margin: 10px 0; border-radius: 8px; border: 1px solid #5d4037; padding: 5px; }
+        button { padding: 10px 15px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 5px; }
     </style>
 </head>
 <body>
@@ -71,16 +65,17 @@
                 ctx.save();
                 ctx.translate(125, 125);
                 ctx.rotate(i * angle + angle / 2);
+                ctx.textAlign = "center";
                 ctx.fillStyle = "white";
-                ctx.font = "bold 16px Arial";
-                ctx.fillText(name, 50, 5);
+                ctx.font = "bold 13px Arial";
+                // النص الآن يظهر في منتصف المسافة بين المركز والحافة
+                ctx.fillText(name, 70, 5); 
                 ctx.restore();
             });
         }
 
         function spin(canvasId) {
             let canvas = document.getElementById(canvasId);
-            // تدوير عشوائي بين 720 و 3600 درجة
             let randomDeg = Math.floor(Math.random() * 3000) + 720;
             canvas.style.transform = "rotate(" + randomDeg + "deg)";
         }
