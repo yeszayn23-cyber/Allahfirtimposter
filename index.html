@@ -6,9 +6,17 @@
     <style>
         body { text-align: center; font-family: sans-serif; background: #efebe9; padding: 20px; }
         .wheel-container { margin-bottom: 40px; padding: 15px; border: 2px solid #5d4037; border-radius: 20px; background: #d7ccc8; }
-        canvas { background: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; display: block; margin: 10px auto; transition: transform 3s cubic-bezier(0.17, .67, 0.12, .99); }
+        
+        /* الحاوية الخاصة بـ canvas والسهم */
+        .canvas-wrapper { position: relative; width: 260px; margin: 10px auto; }
+        
+        canvas { background: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; display: block; transition: transform 3s cubic-bezier(0.17, .67, 0.12, .99); }
+        
+        /* السهم */
+        .arrow { width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #3e2723; position: absolute; top: -10px; left: 50%; transform: translateX(-50%); z-index: 10; }
+        
         textarea { width: 90%; height: 60px; margin: 10px 0; border-radius: 8px; border: 1px solid #5d4037; }
-        button { padding: 12px 25px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 5px; }
+        button { padding: 10px 20px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; font-weight: bold; margin: 5px; }
     </style>
 </head>
 <body>
@@ -19,14 +27,20 @@
         <textarea id="in1" placeholder="أدخل الأسماء هنا مفصولة بـ (،)"></textarea><br>
         <button onclick="saveAndDraw('canvas1', 'in1', 'names1')">حفظ الأسماء</button>
         <button onclick="spin('canvas1')">دوّر العجلة</button>
-        <canvas id="canvas1" width="250" height="250"></canvas>
+        <div class="canvas-wrapper">
+            <div class="arrow"></div>
+            <canvas id="canvas1" width="250" height="250"></canvas>
+        </div>
     </div>
 
     <div class="wheel-container">
         <textarea id="in2" placeholder="أدخل الأسماء هنا مفصولة بـ (،)"></textarea><br>
         <button onclick="saveAndDraw('canvas2', 'in2', 'names2')">حفظ الأسماء</button>
         <button onclick="spin('canvas2')">دوّر العجلة</button>
-        <canvas id="canvas2" width="250" height="250"></canvas>
+        <div class="canvas-wrapper">
+            <div class="arrow"></div>
+            <canvas id="canvas2" width="250" height="250"></canvas>
+        </div>
     </div>
 
     <script>
@@ -40,7 +54,7 @@
             let names = text.split('،').filter(n => n.trim() !== "");
             let canvas = document.getElementById(canvasId);
             let ctx = canvas.getContext("2d");
-            canvas.style.transform = "rotate(0deg)"; // إعادة التدوير للصفر
+            canvas.style.transform = "rotate(0deg)"; 
             ctx.clearRect(0, 0, 250, 250);
             
             if (names.length === 0) return;
@@ -58,7 +72,7 @@
                 ctx.translate(125, 125);
                 ctx.rotate(i * angle + angle / 2);
                 ctx.fillStyle = "white";
-                ctx.font = "16px Arial";
+                ctx.font = "bold 16px Arial";
                 ctx.fillText(name, 50, 5);
                 ctx.restore();
             });
@@ -66,50 +80,11 @@
 
         function spin(canvasId) {
             let canvas = document.getElementById(canvasId);
-            let randomDeg = Math.floor(Math.random() * 3600) + 720;
+            // تدوير عشوائي بين 720 و 3600 درجة
+            let randomDeg = Math.floor(Math.random() * 3000) + 720;
             canvas.style.transform = "rotate(" + randomDeg + "deg)";
         }
 
-        window.onload = () => {
-            ['names1', 'names2'].forEach((k, i) => {
-                let saved = localStorage.getItem(k);
-                if(saved) {
-                    document.getElementById('in' + (i+1)).value = saved;
-                    draw('canvas' + (i+1), saved);
-                }
-            });
-        };
-    </script>
-</body>
-</html>
-        function draw(canvasId, text) {
-            let names = text.split('،').filter(n => n.trim() !== "");
-            let canvas = document.getElementById(canvasId);
-            let ctx = canvas.getContext("2d");
-            ctx.clearRect(0, 0, 250, 250);
-            
-            if (names.length === 0) return;
-
-            let angle = (2 * Math.PI) / names.length;
-            names.forEach((name, i) => {
-                ctx.beginPath();
-                ctx.moveTo(125, 125);
-                ctx.arc(125, 125, 120, i * angle, (i + 1) * angle);
-                ctx.fillStyle = i % 2 === 0 ? "#795548" : "#5d4037";
-                ctx.fill();
-                ctx.stroke();
-                
-                ctx.save();
-                ctx.translate(125, 125);
-                ctx.rotate(i * angle + angle / 2);
-                ctx.fillStyle = "white";
-                ctx.font = "16px Arial";
-                ctx.fillText(name, 50, 5);
-                ctx.restore();
-            });
-        }
-
-        // استرجاع البيانات عند التشغيل
         window.onload = () => {
             ['names1', 'names2'].forEach((k, i) => {
                 let saved = localStorage.getItem(k);
