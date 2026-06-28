@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>عجلة الحظ المزدوجة</title>
+    <style>
+        body { display: flex; flex-direction: column; align-items: center; font-family: sans-serif; background: #f4f4f4; }
+        .container { display: flex; gap: 50px; margin-top: 50px; }
+        .wheel-box { text-align: center; }
+        canvas { border: 5px solid #5d4037; border-radius: 50%; cursor: pointer; background: #8d6e63; }
+        button { margin-top: 20px; padding: 10px 20px; cursor: pointer; background: #5d4037; color: white; border: none; border-radius: 5px; }
+    </style>
+</head>
+<body>
+
+    <h1>عجلة الحظ التلجرامية</h1>
+    
+    <div class="container">
+        <div class="wheel-box">
+            <canvas id="wheel1" width="300" height="300"></canvas>
+            <br><button onclick="spin(1)">تدوير العجلة 1</button>
+        </div>
+        <div class="wheel-box">
+            <canvas id="wheel2" width="300" height="300"></canvas>
+            <br><button onclick="spin(2)">تدوير العجلة 2</button>
+        </div>
+    </div>
+
+    <script>
+        // أضف الأسماء التي تريدها هنا
+        const items1 = ["أحمد", "سارة", "محمد", "نور"];
+        const items2 = ["خيار 1", "خيار 2", "خيار 3", "خيار 4"];
+
+        function drawWheel(id, items) {
+            const canvas = document.getElementById(id);
+            const ctx = canvas.getContext("2d");
+            const arc = Math.PI * 2 / items.length;
+            ctx.clearRect(0, 0, 300, 300);
+            
+            items.forEach((item, i) => {
+                ctx.beginPath();
+                ctx.fillStyle = i % 2 === 0 ? "#795548" : "#6d4c41";
+                ctx.moveTo(150, 150);
+                ctx.arc(150, 150, 140, i * arc, (i + 1) * arc);
+                ctx.fill();
+                ctx.fillStyle = "white";
+                ctx.fillText(item, 200, 150); // تبسيط للنص
+            });
+        }
+
+        function spin(num) {
+            alert("تدوير العجلة " + num + " - يمكنك إضافة منطق الدوران هنا!");
+        }
+
+        drawWheel("wheel1", items1);
+        drawWheel("wheel2", items2);
+    </script>
+</body>
+</html>
