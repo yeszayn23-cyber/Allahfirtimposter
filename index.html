@@ -7,56 +7,62 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Winwheel/2.7.0/Winwheel.min.js"></script>
     <style>
         body { text-align: center; background: #efebe9; font-family: sans-serif; padding: 10px; }
-        .input-box { margin-bottom: 20px; }
-        textarea { width: 80%; height: 60px; padding: 10px; border-radius: 8px; border: 1px solid #8d6e63; }
+        .input-box { margin-bottom: 30px; border: 2px solid #a1887f; padding: 15px; border-radius: 15px; }
+        textarea { width: 90%; height: 60px; padding: 10px; border-radius: 8px; border: 1px solid #8d6e63; margin-bottom: 10px; }
         canvas { background-color: #8d6e63; border-radius: 50%; border: 5px solid #3e2723; margin-top: 10px; }
-        button { padding: 10px 20px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 5px; margin: 5px; }
+        button { padding: 12px 25px; cursor: pointer; background: #3e2723; color: white; border: none; border-radius: 8px; margin: 5px; font-size: 16px; }
     </style>
 </head>
 <body>
 
-    <h1>عجلة الحظ - أضف أسماءك</h1>
+    <h1>عجلة الحظ التفاعلية</h1>
 
     <div class="input-box">
-        <textarea id="input1" placeholder="اكتب الأسماء هنا مفصولة بفاصلة (مثال: أحمد,سارة,علي)"></textarea><br>
-        <button onclick="updateWheel(wheel1, 'input1')">تحديث وحفظ العجلة 1</button>
+        <textarea id="input1" placeholder="اكتب الأسماء هنا مفصولة بفاصلة عربية (،) مثال: أحمد،سارة،علي"></textarea><br>
+        <button onclick="saveAndDraw(wheel1, 'input1', 'names1')">تحديث وحفظ العجلة 1</button>
         <br>
         <canvas id="canvas1" width="250" height="250"></canvas>
-        <br><button onclick="wheel1.startAnimation()">دوّر العجلة 1</button>
+        <br><button onclick="wheel1.startAnimation()">تدوير العجلة 1</button>
     </div>
 
-    <hr>
-
     <div class="input-box">
-        <textarea id="input2" placeholder="اكتب الأسماء هنا مفصولة بفاصلة (مثال: خيار1,خيار2)"></textarea><br>
-        <button onclick="updateWheel(wheel2, 'input2')">تحديث وحفظ العجلة 2</button>
+        <textarea id="input2" placeholder="اكتب الأسماء هنا مفصولة بفاصلة عربية (،)"></textarea><br>
+        <button onclick="saveAndDraw(wheel2, 'input2', 'names2')">تحديث وحفظ العجلة 2</button>
         <br>
         <canvas id="canvas2" width="250" height="250"></canvas>
-        <br><button onclick="wheel2.startAnimation()">دوّر العجلة 2</button>
+        <br><button onclick="wheel2.startAnimation()">تدوير العجلة 2</button>
     </div>
 
     <script>
-        function createWheel(id) {
-            return new Winwheel({
-                'canvasId': id,
-                'numSegments': 1,
-                'segments': [{'fillStyle': '#a1887f', 'text': 'ابدأ'}]
-            });
+        // إعداد العجلات
+        let wheel1 = new Winwheel({'canvasId': 'canvas1', 'numSegments': 1, 'segments': [{'text': 'العجلة 1'}]});
+        let wheel2 = new Winwheel({'canvasId': 'canvas2', 'numSegments': 1, 'segments': [{'text': 'العجلة 2'}]});
+
+        // دالة الحفظ والرسم
+        function saveAndDraw(wheel, inputId, storageKey) {
+            let text = document.getElementById(inputId).value;
+            localStorage.setItem(storageKey, text); // حفظ في المتصفح
+            updateWheel(wheel, text);
         }
 
-        let wheel1 = createWheel("canvas1");
-        let wheel2 = createWheel("canvas2");
-
-        function updateWheel(wheel, inputId) {
-            let text = document.getElementById(inputId).value;
-            let names = text.split(',').map(name => name.trim());
+        function updateWheel(wheel, text) {
+            let names = text.split('،').map(name => name.trim()).filter(n => n !== "");
+            if (names.length === 0) return;
             
-            wheel.segments = []; // مسح القديم
+            wheel.segments = []; // مسح القطاعات القديمة
             names.forEach(name => {
                 wheel.addSegment({'fillStyle': '#a1887f', 'text': name}, null);
             });
             wheel.draw();
         }
+
+        // استرجاع البيانات عند فتح الصفحة
+        window.onload = () => {
+            let n1 = localStorage.getItem('names1');
+            let n2 = localStorage.getItem('names2');
+            if(n1) { document.getElementById('input1').value = n1; updateWheel(wheel1, n1); }
+            if(n2) { document.getElementById('input2').value = n2; updateWheel(wheel2, n2); }
+        };
     </script>
 </body>
 </html>
